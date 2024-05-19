@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "nEn",
+        "EFE",
+        "nEn"
+    ],
+    "key": {
+        "n": {
+            "item": "minecraft:netherite_ingot"
+        },
+        "E": {
+            "item": "minecraft:end_crystal"
+        },
+        "F": {
+            "item": "dimensionalknives:dimensional_knife"
+        }
+    },
+    "result": {
+        "item": "dimensionalknives:advanced_dimensional_knife",
+        "count": 1
+    }
+}

@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "dimensionalknives",
+	"version": "${version}",
+	"name": "Dimensional Knives",
+	"description": "Dimensional Knives",
+	"authors": [
+		"_Bullfighter_"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/dimensionalknives/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"bullfighter.dimensionalknives.ExampleMod"
+		],
+		"client": [
+			"bullfighter.dimensionalknives.ExampleModClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*",
+		"immersive_portals": "*"
+
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
