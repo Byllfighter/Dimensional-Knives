@@ -3,7 +3,10 @@ package bullfighter.dimensionalknives;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -17,6 +20,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -24,6 +28,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import qouteall.imm_ptl.core.api.PortalAPI;
@@ -58,7 +63,7 @@ public class ExampleMod implements ModInitializer {
 		Registry.register(Registries.ENTITY_TYPE, new Identifier("dimensionalknives:dimensional_portal"), DimensionalPortal.ENTITY_TYPE);
 		ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);
 		
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register(content -> {
+		ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
 			content.add(DimensionalKnife);
 			content.add(AdvancedDimensionalKnife);
 		});
@@ -197,6 +202,40 @@ public class ExampleMod implements ModInitializer {
 		public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
      		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
    		}
+
+		public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+			return !miner.isCreative();
+		}
+
+		public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
+			if (state.isOf(Blocks.COBWEB)) {
+				return 15.0F;
+			} else {
+				return state.isIn(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
+			}
+		}
+
+		public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+			stack.damage(1, attacker, (e) -> {
+				e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+			});
+			return true;
+		}
+
+		public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+			if (state.getHardness(world, pos) != 0.0F) {
+			   stack.damage(2, miner, (e) -> {
+				  e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+			   });
+			}
+	  
+			return true;
+		 }
+	  
+		public boolean isSuitableFor(BlockState state) {
+			return state.isOf(Blocks.COBWEB);
+		}
+
 	}
 
 	public Item DimensionalKnife = Registry.register(Registries.ITEM, new Identifier("dimensionalknives","dimensional_knife"), new DimensionalKniveItem(false, 3, -1, new Item.Settings().maxDamage(250)));
